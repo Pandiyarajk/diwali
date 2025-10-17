@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Diwali Celebration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
+
+        body.burst-mode {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        body.night-mode {
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        #burst-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        #night-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        #light-btn {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .title {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .diya {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+        }
+
+        .cracker-particle {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: sparkleFloat 2s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0);
+            }
+        }
+
+        .instruction {
+            position: fixed;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            z-index: 1000;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="burst-mode">
+    <canvas id="canvas"></canvas>
+    
+    <div class="controls">
+        <div class="mode-buttons">
+            <button id="burst-btn" class="active">🎆 Burst Mode</button>
+            <button id="night-btn">✨ Night Mode</button>
+            <button id="light-btn">🪔 Light Mode</button>
+        </div>
+    </div>
+
+    <div class="instruction">Click anywhere to celebrate!</div>
+    <div class="title">Happy Diwali! 🎊</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        let currentMode = 'burst';
+        const particles = [];
+        const diyas = [];
+        const sparkles = [];
+
+        // Mode buttons
+        document.getElementById('burst-btn').addEventListener('click', () => {
+            setMode('burst');
+        });
+
+        document.getElementById('night-btn').addEventListener('click', () => {
+            setMode('night');
+        });
+
+        document.getElementById('light-btn').addEventListener('click', () => {
+            setMode('light');
+        });
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.body.className = mode + '-mode';
+            
+            // Update active button
+            document.querySelectorAll('.mode-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(mode + '-btn').classList.add('active');
+
+            // Clear existing effects
+            particles.length = 0;
+            diyas.length = 0;
+            sparkles.length = 0;
+        }
+
+        // Mouse interaction
+        canvas.addEventListener('click', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+
+            if (currentMode === 'burst') {
+                createCracker(x, y);
+            } else if (currentMode === 'night') {
+                createSparkles(x, y);
+            } else if (currentMode === 'light') {
+                createDiya(x, y);
+            }
+        });
+
+        // Cursor trail for night mode
+        canvas.addEventListener('mousemove', (e) => {
+            if (currentMode === 'night') {
+                createTrailSparkle(e.clientX, e.clientY);
+            }
+        });
+
+        // Cracker burst effect
+        function createCracker(x, y) {
+            const colors = ['#ff0000', '#ff6600', '#ffff00', '#00ff00', '#0099ff', '#9900ff', '#ff00ff'];
+            const particleCount = 100;
+
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const velocity = 2 + Math.random() * 4;
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * velocity,
+                    vy: Math.sin(angle) * velocity,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: 2 + Math.random() * 3,
+                    life: 1,
+                    gravity: 0.1
+                });
+            }
+
+            // Add some extra random particles
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: 1 + Math.random() * 2,
+                    life: 1,
+                    gravity: 0.05
+                });
+            }
+        }
+
+        // Sparkle effect for night mode
+        function createSparkles(x, y) {
+            for (let i = 0; i < 30; i++) {
+                sparkles.push({
+                    x: x + (Math.random() - 0.5) * 40,
+                    y: y + (Math.random() - 0.5) * 40,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2 - 1,
+                    size: 2 + Math.random() * 4,
+                    life: 1,
+                    color: `hsl(${180 + Math.random() * 60}, 100%, ${50 + Math.random() * 30}%)`
+                });
+            }
+        }
+
+        function createTrailSparkle(x, y) {
+            if (Math.random() > 0.7) {
+                sparkles.push({
+                    x: x + (Math.random() - 0.5) * 10,
+                    y: y + (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: -0.5 - Math.random(),
+                    size: 1 + Math.random() * 2,
+                    life: 1,
+                    color: `hsl(${180 + Math.random() * 60}, 100%, 70%)`
+                });
+            }
+        }
+
+        // Diya light effect
+        function createDiya(x, y) {
+            diyas.push({
+                x: x,
+                y: y,
+                size: 30,
+                flameSize: 15,
+                flameOffset: 0,
+                life: 1,
+                age: 0
+            });
+        }
+
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw particles (burst mode)
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity;
+                p.life -= 0.01;
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            // Update and draw sparkles (night mode)
+            for (let i = sparkles.length - 1; i >= 0; i--) {
+                const s = sparkles[i];
+                
+                s.x += s.vx;
+                s.y += s.vy;
+                s.life -= 0.015;
+
+                if (s.life <= 0) {
+                    sparkles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.globalAlpha = s.life;
+                ctx.fillStyle = s.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = s.color;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw sparkle rays
+                ctx.strokeStyle = s.color;
+                ctx.lineWidth = 1;
+                for (let j = 0; j < 4; j++) {
+                    const angle = (Math.PI * 2 * j) / 4 + s.life * 2;
+                    const len = s.size * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(s.x + Math.cos(angle) * len, s.y + Math.sin(angle) * len);
+                    ctx.stroke();
+                }
+                
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+
+            // Update and draw diyas (light mode)
+            for (let i = diyas.length - 1; i >= 0; i--) {
+                const d = diyas[i];
+                d.age += 0.1;
+                d.flameOffset = Math.sin(d.age) * 3;
+                d.life -= 0.003;
+
+                if (d.life <= 0) {
+                    diyas.splice(i, 1);
+                    continue;
+                }
+
+                ctx.globalAlpha = d.life;
+
+                // Draw diya base
+                ctx.fillStyle = '#8B4513';
+                ctx.beginPath();
+                ctx.ellipse(d.x, d.y, d.size, d.size * 0.4, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw diya rim
+                ctx.fillStyle = '#DAA520';
+                ctx.beginPath();
+                ctx.ellipse(d.x, d.y - 5, d.size * 0.8, d.size * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw flame glow
+                const gradient = ctx.createRadialGradient(d.x, d.y - 20 + d.flameOffset, 0, d.x, d.y - 20 + d.flameOffset, d.flameSize * 3);
+                gradient.addColorStop(0, 'rgba(255, 200, 0, 0.6)');
+                gradient.addColorStop(0.5, 'rgba(255, 100, 0, 0.3)');
+                gradient.addColorStop(1, 'rgba(255, 50, 0, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y - 20 + d.flameOffset, d.flameSize * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw flame
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#ff6600';
+                
+                const flameGradient = ctx.createLinearGradient(d.x, d.y - 30 + d.flameOffset, d.x, d.y - 10 + d.flameOffset);
+                flameGradient.addColorStop(0, '#ffff00');
+                flameGradient.addColorStop(0.5, '#ff9900');
+                flameGradient.addColorStop(1, '#ff3300');
+                ctx.fillStyle = flameGradient;
+                
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y - 10 + d.flameOffset);
+                ctx.bezierCurveTo(
+                    d.x - 8, d.y - 20 + d.flameOffset,
+                    d.x - 5, d.y - 30 + d.flameOffset,
+                    d.x, d.y - 35 + d.flameOffset
+                );
+                ctx.bezierCurveTo(
+                    d.x + 5, d.y - 30 + d.flameOffset,
+                    d.x + 8, d.y - 20 + d.flameOffset,
+                    d.x, d.y - 10 + d.flameOffset
+                );
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Add some ambient sparkles in night mode
+        setInterval(() => {
+            if (currentMode === 'night') {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                createTrailSparkle(x, y);
+            }
+        }, 100);
+
+        // Random crackers in burst mode (optional)
+        setInterval(() => {
+            if (currentMode === 'burst' && Math.random() > 0.95) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height * 0.7;
+                createCracker(x, y);
+            }
+        }, 500);
+    </script>
+</body>
+</html>
