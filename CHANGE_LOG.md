@@ -2,6 +2,28 @@
 
 All notable changes to the Interactive Diwali Celebration Page will be documented in this file.
 
+## [1.1.0] - 2025-10-17
+
+### Added
+- **Light/Dark Theme Toggle**: User can now switch between light and dark themes
+  - Theme toggle button in the top-right corner
+  - Smooth theme transitions with CSS variables
+  - Theme preference persisted in localStorage
+  - Dynamic theme icons (🌙 for dark, ☀️ for light)
+  - Theme affects:
+    - Background overlays and glass morphism effects
+    - Text colors for better readability
+    - Control panel styling
+    - Title and instruction text
+  - Independent from celebration modes (works with all modes)
+  - Accessible with proper ARIA labels
+  
+### Improved
+- Enhanced UI accessibility with theme options
+- Better contrast and readability in both themes
+- Modernized color system using CSS custom properties
+- Improved glass morphism effects for both light and dark modes
+
 ## [1.0.0] - 2025-10-17
 
 ### Added

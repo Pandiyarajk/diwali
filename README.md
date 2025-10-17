@@ -4,6 +4,13 @@ An immersive, interactive web experience to celebrate Diwali with three beautifu
 
 ## ✨ Features
 
+### 🌓 Light/Dark Theme Toggle
+- Switch between light and dark themes for optimal viewing comfort
+- Theme preference is automatically saved in your browser
+- Works seamlessly with all celebration modes
+- Beautiful theme-aware styling and colors
+- Toggle button in the top-right corner (🌙/☀️)
+
 ### 🎆 Burst Mode
 - Click anywhere to burst colorful crackers
 - 100+ particles explode in all directions with realistic physics
