@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Diwali Celebration</title>
     <style>
+        :root {
+            --bg-overlay: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: white;
+            --title-shadow: rgba(255, 255, 255, 0.5);
+            --instruction-color: rgba(255, 255, 255, 0.8);
+            --theme-toggle-bg: rgba(255, 255, 255, 0.2);
+            --theme-toggle-color: #ffffff;
+        }
+
+        [data-theme="light"] {
+            --bg-overlay: rgba(255, 255, 255, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-color: #1a1a2e;
+            --title-shadow: rgba(255, 215, 0, 0.8);
+            --instruction-color: rgba(0, 0, 0, 0.7);
+            --theme-toggle-bg: rgba(0, 0, 0, 0.1);
+            --theme-toggle-color: #1a1a2e;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -44,12 +66,51 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
             padding: 20px 40px;
             border-radius: 50px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--theme-toggle-bg);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--theme-toggle-color);
+            font-weight: bold;
+        }
+
+        .theme-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .mode-buttons {
@@ -101,20 +162,20 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            color: white;
+            color: var(--text-color);
             font-size: 48px;
             font-weight: bold;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 0 20px var(--title-shadow);
             animation: glow 2s ease-in-out infinite alternate;
             text-align: center;
         }
 
         @keyframes glow {
             from {
-                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
+                text-shadow: 0 0 20px var(--title-shadow), 0 0 30px var(--title-shadow);
             }
             to {
-                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5);
+                text-shadow: 0 0 30px var(--title-shadow), 0 0 40px var(--title-shadow), 0 0 50px var(--title-shadow);
             }
         }
 
@@ -152,7 +213,7 @@
             top: 120px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--instruction-color);
             font-size: 18px;
             z-index: 1000;
             text-align: center;
@@ -172,6 +233,13 @@
 <body class="burst-mode">
     <canvas id="canvas"></canvas>
     
+    <div class="theme-toggle">
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+            <span id="theme-icon">🌙</span>
+            <span class="theme-label" id="theme-label">Dark</span>
+        </button>
+    </div>
+
     <div class="controls">
         <div class="mode-buttons">
             <button id="burst-btn" class="active">🎆 Burst Mode</button>
@@ -199,6 +267,35 @@
         const particles = [];
         const diyas = [];
         const sparkles = [];
+
+        // Theme management
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeLabel = document.getElementById('theme-label');
+        const htmlElement = document.documentElement;
+
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        function setTheme(theme) {
+            htmlElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            if (theme === 'light') {
+                themeIcon.textContent = '☀️';
+                themeLabel.textContent = 'Light';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeLabel.textContent = 'Dark';
+            }
+        }
 
         // Mode buttons
         document.getElementById('burst-btn').addEventListener('click', () => {
