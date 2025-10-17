@@ -2,6 +2,31 @@
 
 All notable changes to the Interactive Diwali Celebration Page will be documented in this file.
 
+## [1.2.0] - 2025-10-17
+
+### Fixed
+- **Dark Theme Background**: Dark theme now properly sets the page background to black/very dark colors
+  - Burst mode background: Black to dark navy gradient
+  - Night mode background: Pure black to dark gradient
+  - Light mode background: Dark gray gradient
+  - Provides better contrast and true dark mode experience
+
+### Added
+- **Auto-firing Rockets and Bombs in Burst Mode**: Burst mode now features automatic firework effects
+  - Rockets: Pointed projectiles that launch upward and explode at peak height
+  - Bombs: Round projectiles with fuses that create multi-burst explosions
+  - 1-3 rockets/bombs fire automatically every 1.5 seconds
+  - Each rocket/bomb has a colorful trail effect
+  - Explosions create spectacular particle bursts (100+ particles per explosion)
+  - Bombs create triple explosions for enhanced visual impact
+  - Physics-based trajectories with gravity and velocity
+  - Random colors for each rocket/bomb (red, orange, yellow, green, blue, purple, pink)
+
+### Improved
+- Enhanced burst mode visual experience with continuous fireworks
+- Better dark theme contrast across all celebration modes
+- More engaging automatic effects requiring less user interaction
+
 ## [1.1.0] - 2025-10-17
 
 ### Added
