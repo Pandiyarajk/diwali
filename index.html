@@ -51,6 +51,18 @@
             background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
         }
 
+        [data-theme="dark"] body.burst-mode {
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+        }
+
+        [data-theme="dark"] body.night-mode {
+            background: linear-gradient(180deg, #000000 0%, #0a0e27 50%, #1a1a2e 100%);
+        }
+
+        [data-theme="dark"] body.light-mode {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
         #canvas {
             position: fixed;
             top: 0;
@@ -272,6 +284,7 @@
         const particles = [];
         const diyas = [];
         const sparkles = [];
+        const rockets = [];
 
         // Theme management
         const themeToggle = document.getElementById('theme-toggle');
@@ -329,6 +342,7 @@
             particles.length = 0;
             diyas.length = 0;
             sparkles.length = 0;
+            rockets.length = 0;
         }
 
         // Mouse interaction
@@ -351,6 +365,21 @@
                 createTrailSparkle(e.clientX, e.clientY);
             }
         });
+
+        // Rocket effect for burst mode
+        function createRocket(x, y) {
+            rockets.push({
+                x: x || Math.random() * canvas.width,
+                y: y || canvas.height,
+                vx: (Math.random() - 0.5) * 2,
+                vy: -8 - Math.random() * 4,
+                color: ['#ff0000', '#ff6600', '#ffff00', '#00ff00', '#0099ff', '#9900ff', '#ff00ff'][Math.floor(Math.random() * 7)],
+                size: 4,
+                trail: [],
+                exploded: false,
+                type: Math.random() > 0.5 ? 'rocket' : 'bomb'
+            });
+        }
 
         // Cracker burst effect
         function createCracker(x, y) {
@@ -493,6 +522,84 @@
                 ctx.globalAlpha = 1;
             }
 
+            // Update and draw rockets (burst mode)
+            for (let i = rockets.length - 1; i >= 0; i--) {
+                const r = rockets[i];
+                
+                if (!r.exploded) {
+                    r.x += r.vx;
+                    r.y += r.vy;
+                    r.vy += 0.1; // Gravity
+                    
+                    // Add trail
+                    r.trail.push({ x: r.x, y: r.y, life: 1 });
+                    if (r.trail.length > 15) r.trail.shift();
+                    
+                    // Check if rocket should explode
+                    if (r.vy > 0 || r.y < canvas.height * 0.3 || Math.random() > 0.98) {
+                        r.exploded = true;
+                        // Create explosion
+                        if (r.type === 'rocket') {
+                            createCracker(r.x, r.y);
+                        } else {
+                            // Bomb - bigger explosion
+                            createCracker(r.x, r.y);
+                            setTimeout(() => createCracker(r.x + 20, r.y + 20), 50);
+                            setTimeout(() => createCracker(r.x - 20, r.y - 20), 100);
+                        }
+                    }
+                    
+                    // Draw trail
+                    for (let j = r.trail.length - 1; j >= 0; j--) {
+                        const t = r.trail[j];
+                        t.life -= 0.05;
+                        if (t.life <= 0) {
+                            r.trail.splice(j, 1);
+                            continue;
+                        }
+                        ctx.globalAlpha = t.life * 0.5;
+                        ctx.fillStyle = r.color;
+                        ctx.beginPath();
+                        ctx.arc(t.x, t.y, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1;
+                    
+                    // Draw rocket/bomb
+                    ctx.fillStyle = r.color;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = r.color;
+                    ctx.beginPath();
+                    if (r.type === 'rocket') {
+                        // Draw rocket shape
+                        ctx.arc(r.x, r.y, r.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        // Rocket tip
+                        ctx.beginPath();
+                        ctx.moveTo(r.x, r.y - r.size * 2);
+                        ctx.lineTo(r.x - r.size, r.y);
+                        ctx.lineTo(r.x + r.size, r.y);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else {
+                        // Draw bomb shape
+                        ctx.arc(r.x, r.y, r.size * 1.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        // Fuse
+                        ctx.strokeStyle = '#ff6600';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(r.x, r.y - r.size * 1.5);
+                        ctx.lineTo(r.x + 3, r.y - r.size * 2.5);
+                        ctx.stroke();
+                    }
+                    ctx.shadowBlur = 0;
+                } else {
+                    // Remove exploded rocket
+                    rockets.splice(i, 1);
+                }
+            }
+
             // Update and draw diyas (light mode)
             for (let i = diyas.length - 1; i >= 0; i--) {
                 const d = diyas[i];
@@ -571,14 +678,19 @@
             }
         }, 100);
 
-        // Random crackers in burst mode (optional)
+        // Auto-fire rockets and bombs in burst mode
         setInterval(() => {
-            if (currentMode === 'burst' && Math.random() > 0.95) {
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height * 0.7;
-                createCracker(x, y);
+            if (currentMode === 'burst') {
+                // Fire 1-3 rockets/bombs
+                const count = 1 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const x = canvas.width * 0.2 + Math.random() * canvas.width * 0.6;
+                        createRocket(x);
+                    }, i * 200);
+                }
             }
-        }, 500);
+        }, 1500);
     </script>
 </body>
 </html>
