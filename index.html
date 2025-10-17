@@ -9,22 +9,22 @@
             --bg-overlay: rgba(0, 0, 0, 0.1);
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --text-color: white;
-            --title-shadow: rgba(255, 255, 255, 0.5);
-            --instruction-color: rgba(255, 255, 255, 0.8);
-            --theme-toggle-bg: rgba(255, 255, 255, 0.2);
-            --theme-toggle-color: #ffffff;
+            --text-color: #FFD700;
+            --title-shadow: rgba(255, 215, 0, 0.8);
+            --instruction-color: rgba(255, 215, 0, 0.95);
+            --theme-toggle-bg: rgba(0, 0, 0, 0.5);
+            --theme-toggle-color: #FFD700;
         }
 
         [data-theme="light"] {
             --bg-overlay: rgba(255, 255, 255, 0.3);
             --glass-bg: rgba(255, 255, 255, 0.4);
             --glass-border: rgba(0, 0, 0, 0.1);
-            --text-color: #1a1a2e;
-            --title-shadow: rgba(255, 215, 0, 0.8);
-            --instruction-color: rgba(0, 0, 0, 0.7);
-            --theme-toggle-bg: rgba(0, 0, 0, 0.1);
-            --theme-toggle-color: #1a1a2e;
+            --text-color: #CC8800;
+            --title-shadow: rgba(255, 140, 0, 0.8);
+            --instruction-color: rgba(204, 136, 0, 0.95);
+            --theme-toggle-bg: rgba(0, 0, 0, 0.3);
+            --theme-toggle-color: #CC8800;
         }
 
         * {
@@ -83,15 +83,16 @@
             backdrop-filter: blur(10px);
             padding: 12px 20px;
             border-radius: 30px;
-            border: 1px solid var(--glass-border);
+            border: 2px solid rgba(255, 215, 0, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
         .theme-toggle:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+            border-color: rgba(255, 215, 0, 0.8);
         }
 
         .theme-toggle-btn {
@@ -105,6 +106,7 @@
             gap: 8px;
             color: var(--theme-toggle-color);
             font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }
 
         .theme-label {
@@ -143,17 +145,20 @@
 
         #burst-btn {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         #night-btn {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         #light-btn {
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
+            color: #1a1a2e;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
         }
 
         .title {
