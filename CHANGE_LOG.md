@@ -2,6 +2,14 @@
 
 All notable changes to the Interactive Diwali Celebration Page will be documented in this file.
 
+## [1.2.1] - 2025-10-19
+
+### Fixed
+- **Dark Mode Background Color**: Fixed dark mode to use solid black (#000000) background
+  - All dark mode variants (burst, night, and light modes) now display with pure black background
+  - Removed gradients in dark mode for consistent black appearance
+  - Improves true dark mode experience and reduces eye strain
+
 ## [1.2.0] - 2025-10-17
 
 ### Fixed
