@@ -2,6 +2,20 @@
 
 All notable changes to the Interactive Diwali Celebration Page will be documented in this file.
 
+## [1.2.3] - 2025-10-19
+
+### Fixed
+- **Dark Mode on Desktop Browsers**: Fixed dark mode not working properly on laptop/desktop browsers
+  - Added explicit `[data-theme="dark"]` CSS selector with dark theme variable definitions
+  - Previously, dark mode relied on `:root` defaults which didn't work consistently when `data-theme` attribute was set
+  - Dark theme now works consistently across all browsers (mobile and desktop)
+  - Ensures proper contrast, colors, and styling when dark mode is active
+  - Affects all UI elements: glass morphism effects, text colors, shadows, and theme toggle styling
+
+### Improved
+- More reliable theme switching mechanism across different browsers and devices
+- Better CSS architecture for theme management
+
 ## [1.2.2] - 2025-10-19
 
 ### Fixed
