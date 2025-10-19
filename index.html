@@ -52,15 +52,15 @@
         }
 
         [data-theme="dark"] body.burst-mode {
-            background: #000000;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
         }
 
         [data-theme="dark"] body.night-mode {
-            background: #000000;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
         }
 
         [data-theme="dark"] body.light-mode {
-            background: #000000;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
         }
 
         #canvas {
@@ -278,6 +278,7 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            generateStars();
         });
 
         let currentMode = 'burst';
@@ -285,6 +286,7 @@
         const diyas = [];
         const sparkles = [];
         const rockets = [];
+        const stars = [];
 
         // Theme management
         const themeToggle = document.getElementById('theme-toggle');
@@ -292,8 +294,24 @@
         const themeLabel = document.getElementById('theme-label');
         const htmlElement = document.documentElement;
 
+        // Generate stars for dark mode night sky
+        function generateStars() {
+            stars.length = 0;
+            for (let i = 0; i < 200; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    opacity: 0.3 + Math.random() * 0.7,
+                    twinkleSpeed: 0.02 + Math.random() * 0.03,
+                    twinklePhase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
         // Load saved theme or default to dark
         const savedTheme = localStorage.getItem('theme') || 'dark';
+        generateStars();
         setTheme(savedTheme);
 
         themeToggle.addEventListener('click', () => {
@@ -372,7 +390,7 @@
                 x: x || Math.random() * canvas.width,
                 y: y || canvas.height,
                 vx: (Math.random() - 0.5) * 2,
-                vy: -8 - Math.random() * 4,
+                vy: -12 - Math.random() * 6,
                 color: ['#ff0000', '#ff6600', '#ffff00', '#00ff00', '#0099ff', '#9900ff', '#ff00ff'][Math.floor(Math.random() * 7)],
                 size: 4,
                 trail: [],
@@ -427,7 +445,7 @@
                     vy: (Math.random() - 0.5) * 2 - 1,
                     size: 2 + Math.random() * 4,
                     life: 1,
-                    color: `hsl(${180 + Math.random() * 60}, 100%, ${50 + Math.random() * 30}%)`
+                    color: `hsl(${Math.random() * 360}, 100%, ${50 + Math.random() * 30}%)`
                 });
             }
         }
@@ -441,7 +459,7 @@
                     vy: -0.5 - Math.random(),
                     size: 1 + Math.random() * 2,
                     life: 1,
-                    color: `hsl(${180 + Math.random() * 60}, 100%, 70%)`
+                    color: `hsl(${Math.random() * 360}, 100%, 70%)`
                 });
             }
         }
@@ -462,6 +480,34 @@
         // Animation loop
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stars in dark mode (night sky effect)
+            const isDarkMode = htmlElement.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {
+                for (let i = 0; i < stars.length; i++) {
+                    const star = stars[i];
+                    star.twinklePhase += star.twinkleSpeed;
+                    const twinkle = Math.sin(star.twinklePhase) * 0.5 + 0.5;
+                    const alpha = star.opacity * twinkle;
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Add star glow
+                    if (star.size > 1) {
+                        ctx.shadowBlur = 5;
+                        ctx.shadowColor = '#ffffff';
+                        ctx.beginPath();
+                        ctx.arc(star.x, star.y, star.size * 0.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+                ctx.globalAlpha = 1;
+            }
 
             // Update and draw particles (burst mode)
             for (let i = particles.length - 1; i >= 0; i--) {
@@ -535,8 +581,8 @@
                     r.trail.push({ x: r.x, y: r.y, life: 1 });
                     if (r.trail.length > 15) r.trail.shift();
                     
-                    // Check if rocket should explode
-                    if (r.vy > 0 || r.y < canvas.height * 0.3 || Math.random() > 0.98) {
+                    // Check if rocket should explode (at higher altitude)
+                    if (r.vy > -2 || r.y < canvas.height * 0.2 || Math.random() > 0.98) {
                         r.exploded = true;
                         // Create explosion
                         if (r.type === 'rocket') {

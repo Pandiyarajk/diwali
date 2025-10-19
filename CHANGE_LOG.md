@@ -2,6 +2,34 @@
 
 All notable changes to the Interactive Diwali Celebration Page will be documented in this file.
 
+## [1.2.2] - 2025-10-19
+
+### Fixed
+- **Burst Mode Rocket Enhancement**: Rockets now fly higher before exploding
+  - Increased initial velocity from -8-12 to -12-18 for more dramatic launches
+  - Adjusted explosion trigger to occur at higher altitude (20% screen height vs 30%)
+  - Rockets now wait until velocity slows down (-2) before bursting
+  - Creates more impressive burst patterns with better visibility
+  
+- **Night Mode Color Spectrum**: Sparkles now display in full rainbow colors
+  - Changed sparkle colors from blue-cyan range (180-240° hue) to full spectrum (0-360° hue)
+  - Affects both clicked sparkles and cursor trail sparkles
+  - Creates more vibrant and varied glittering effects
+  - Better matches festive celebration atmosphere
+
+- **Dark Mode Night Sky**: Dark mode now displays as authentic night sky
+  - Replaced solid black background with radial gradient (dark blue to black)
+  - Added 200 twinkling stars with varying sizes and opacity
+  - Stars feature realistic twinkle animation with different speeds
+  - Larger stars have subtle glow effects
+  - Stars regenerate on window resize for optimal coverage
+  - Creates immersive night sky experience across all celebration modes
+
+### Improved
+- Enhanced visual impact of burst mode fireworks
+- More diverse and colorful night mode effects
+- Atmospheric dark mode background for all celebration modes
+
 ## [1.2.1] - 2025-10-19
 
 ### Fixed
