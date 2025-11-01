@@ -12,6 +12,7 @@ An immersive, interactive web experience to celebrate Diwali with three beautifu
 - Beautiful theme-aware styling and colors
 - Toggle button in the top-right corner (🌙/☀️)
 
+
 ### 🎆 Burst Mode
 - **Auto-firing rockets and bombs** launch automatically every 1.5 seconds
 - **Rockets** fly upward with colorful trails and explode at peak height
@@ -20,6 +21,7 @@ An immersive, interactive web experience to celebrate Diwali with three beautifu
 - 100+ particles explode in all directions with realistic physics
 - Physics-based trajectories with gravity effects
 - Vibrant gradient background (black in dark theme)
+
 
 ### ✨ Night Mode
 - Click to create glittering sparkle effects
